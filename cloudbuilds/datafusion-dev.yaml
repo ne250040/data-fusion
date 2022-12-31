@@ -1,9 +1,9 @@
 steps:
   - name: gcr.io/cloud-builders/git
     args: ['clone', '-b', 'develop','https://github.com/ne250040/data-fusion-1.git']
-#  - name: gcr.io/cloud-builders/gcloud
-#    entrypoint: 'bash'
-#    args: ['-c', 'gcloud secrets versions access latest --secret=cdfbuild-sa-keyfile > cdfbuild-sa-keyfile.json']
+  - name: gcr.io/cloud-builders/gcloud
+    entrypoint: 'bash'
+    args: ['-c', 'gcloud secrets versions access latest --secret=secret-data-fusion-deploy-key > data-fusion-deploy-key.json']
 
 
 
