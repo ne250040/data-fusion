@@ -4,6 +4,25 @@ steps:
   - name: gcr.io/cloud-builders/gcloud
     entrypoint: 'bash'
     args: ['-c', 'gcloud secrets versions access latest --secret=secret-data-fusion-deploy-key > data-fusion-deploy-key.json']
+  - name: gcr.io/cloud-builders/gcloud
+    entrypoint: 'bash'
+    args: [ '-c', 'gcloud auth activate-service-account --key-file
+    cdfbuild-sa-keyfile.json' ]
+  - name: gcr.io/cloud-builders/gcloud
+    entrypoint: 'bash'
+    args: [ '-c', 'gcloud auth print-access-token > access-token.txt' ]
+  - name: gcr.io/cloud-builders/gcloud
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        for FILE in data-fusion-1/pipeline/*.json
+        do
+        CURRFILE=$(echo $$FILE | sed "s/.*\///" | cut -f 1 -d '.')
+        curl -X PUT -H "Authorization: Bearer $(cat access-token.txt)"
+        "https://naga-trial-instance-fin-dph-vnext-eug02-sandbox-dot-usw1.datafusion.googleusercontent.com/api/v3/namespaces/default/apps/$$CURRFILE" -d
+        "@./data-fusion-1/pipeline/$$CURRFILE.json"   
+        done   
 
-
-
+# To do: Delete steps
+# To do: selective delete & deploy instead of a wild character
